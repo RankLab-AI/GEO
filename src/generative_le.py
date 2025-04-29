@@ -14,33 +14,41 @@ Search Results:
 
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
-def generate_answer(query, sources, num_completions, temperature = 0.5, verbose = False, model = 'gpt-3.5-turbo-16k'):
 
-    openai.api_base = 'https://api.openai.com/v1'
+def generate_answer(
+    query, sources, num_completions, temperature=0.5, verbose=False, model="gpt-3.5-turbo-16k"
+):
 
-    source_text = '\n\n'.join(['### Source '+str(idx+1)+':\n'+source + '\n\n\n' for idx, source in enumerate(sources)])
-    prompt = query_prompt.format(query = query, source_text = source_text)
+    openai.api_base = "https://api.openai.com/v1"
+
+    source_text = "\n\n".join(
+        [
+            "### Source " + str(idx + 1) + ":\n" + source + "\n\n\n"
+            for idx, source in enumerate(sources)
+        ]
+    )
+    prompt = query_prompt.format(query=query, source_text=source_text)
 
     while True:
         try:
-            print('Running OpenAI Model')
+            print("Running OpenAI Model")
             response = openai.ChatCompletion.create(
-                model = model,
+                model=model,
                 temperature=temperature,
                 max_tokens=1024,
-                messages = [
+                messages=[
                     # { 'role': "system", 'content': system_prompt },
-                    { 'role': "user", 'content': prompt }
+                    {"role": "user", "content": prompt}
                 ],
                 top_p=1,
                 n=num_completions,
             )
-            print('Response Done')
+            print("Response Done")
             break
         except Exception as e:
-            print('Error in calling OpenAI API', e)
+            print("Error in calling OpenAI API", e)
             time.sleep(15)
             continue
     pickle.dump(response.usage, open(f"response_usages_16k/{uuid.uuid4()}.pkl", "wb"))
 
-    return [x.message.content + '\n' for x in response.choices]
+    return [x.message.content + "\n" for x in response.choices]
