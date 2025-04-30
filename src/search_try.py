@@ -159,7 +159,7 @@ def search_handler(req, source_count=8):
             sources.append(
                 {
                     "url": link,
-                    "text": f'Title: {html["title"]}\nSummary:' + summary_text,
+                    "text": f"Title: {html['title']}\nSummary:" + summary_text,
                     "raw_source": raw_source,
                     "source": source_text,
                     "summary": summary_text,

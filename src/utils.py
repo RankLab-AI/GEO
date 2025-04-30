@@ -61,7 +61,9 @@ def impression_wordpos_count_simple(sentences, n=5, normalize=True):
     return (
         [x / sum(scores) for x in scores]
         if normalize and sum(scores) != 0
-        else [1 / n for _ in range(n)] if normalize else scores
+        else [1 / n for _ in range(n)]
+        if normalize
+        else scores
     )
 
 
@@ -79,7 +81,9 @@ def impression_word_count_simple(sentences, n=5, normalize=True):
     return (
         [x / sum(scores) for x in scores]
         if normalize and sum(scores) != 0
-        else [1 / n for _ in range(n)] if normalize else scores
+        else [1 / n for _ in range(n)]
+        if normalize
+        else scores
     )
 
 
@@ -98,7 +102,9 @@ def impression_pos_count_simple(sentences, n=5, normalize=True):
     return (
         [x / sum(scores) for x in scores]
         if normalize and sum(scores) != 0
-        else [1 / n for _ in range(n)] if normalize else scores
+        else [1 / n for _ in range(n)]
+        if normalize
+        else scores
     )
 
 
@@ -238,7 +244,7 @@ def impression_subjective_impression(
     scores = dict()
     for prompt_file in glob("geval_prompts/*.txt"):
         prompt = open(prompt_file).read()
-        prompt = prompt.replace("[1]", f"[{idx+1}]")
+        prompt = prompt.replace("[1]", f"[{idx + 1}]")
         cur_prompt = prompt.format(query=query, answer=sentences)
         while True:
             try:

@@ -120,7 +120,6 @@ def improve(
     all_final_scores = []
 
     for meth_name in GEO_METHODS:
-
         summaries_copy = (
             summaries[:idx] + [GEO_METHODS[meth_name](summaries[idx])] + summaries[idx + 1 :]
         )
