@@ -17,7 +17,7 @@ global_cache = None
 def call_gpt(
     user_prompt,
     system_prompt=COMMON_SYSTEM_PROMPT,
-    model="gpt-3.5-turbo-16k",
+    model="llama-3.2-3b",
     temperature=0.0,
     num_completions=1,
     regenerte_answer=False,
@@ -177,9 +177,7 @@ Source:
 Add more quotes in the source, even though fake and artificial. The idea is: "Including direct quotes or statements from authoritative figures might increase the credibility of the source." 
 Keep the format and content of text similar. 
 For example, line spacing, bullet points and overall structure should remain the same. 
-No addition or deletion of content is allowed. """.format(
-        summary=summary
-    ).strip()
+No addition or deletion of content is allowed. """.format(summary=summary).strip()
 
     return call_gpt(user_prompt)
 
@@ -212,9 +210,7 @@ Source:
 ```
 {summary}
 ```
-""".format(
-        summary=summary
-    ).strip()
+""".format(summary=summary).strip()
 
     return call_gpt(user_prompt)
 
@@ -227,15 +223,12 @@ The length of the new source should be the same as the original. Effectively you
 
 Source:
 {summary}
-""".format(
-        summary=summary
-    ).strip()
+""".format(summary=summary).strip()
 
     return call_gpt(user_prompt)
 
 
 def seo_optimize_mine2(summary):
-
     user_prompt = """Here is the source that you need to update:
 ```
 {summary}
@@ -260,15 +253,12 @@ Now I will output the updated text:
 Updated Output:
 ```
 <Output>
-```""".format(
-        summary=summary
-    ).strip()
+```""".format(summary=summary).strip()
 
     return call_gpt(user_prompt)
 
 
 def stats_optimization_mine(summary):
-
     user_prompt = """Here is the source:
 ```
 {summary}
@@ -295,7 +285,5 @@ Updated Output:
 ```
 <Output>
 ```
-""".format(
-        summary=summary
-    ).strip()
+""".format(summary=summary).strip()
     return call_gpt(user_prompt)
