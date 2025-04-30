@@ -1,4 +1,4 @@
-import openai
+from openai import OpenAI
 import time
 import os
 import pickle
@@ -12,43 +12,47 @@ Search Results:
 {source_text}
 """
 
-openai.api_key = os.environ["OPENAI_API_KEY"]
+# Initialize the OpenAI client with modern syntax
+openai_client = OpenAI(api_key=os.getenv("VENICE_API_KEY"), base_url="https://api.venice.ai/api/v1")
 
 
 def generate_answer(
-    query, sources, num_completions, temperature=0.5, verbose=False, model="gpt-3.5-turbo-16k"
+    query, sources, num_completions=1, temperature=0.5, verbose=False, model="llama-3.2-3b"
 ):
-
-    openai.api_base = "https://api.openai.com/v1"
-
     source_text = "\n\n".join(
-        [
-            "### Source " + str(idx + 1) + ":\n" + source + "\n\n\n"
-            for idx, source in enumerate(sources)
-        ]
+        [f"### Source {idx + 1}:\n{source}\n\n\n" for idx, source in enumerate(sources)]
     )
     prompt = query_prompt.format(query=query, source_text=source_text)
 
     while True:
         try:
-            print("Running OpenAI Model")
-            response = openai.ChatCompletion.create(
+            if verbose:
+                print("Calling OpenAI Client...")
+
+            response = openai_client.chat.completions.create(
                 model=model,
                 temperature=temperature,
                 max_tokens=1024,
-                messages=[
-                    # { 'role': "system", 'content': system_prompt },
-                    {"role": "user", "content": prompt}
-                ],
                 top_p=1,
                 n=num_completions,
+                messages=[{"role": "user", "content": prompt}],
             )
-            print("Response Done")
-            break
+
+            if verbose:
+                print("Response received.")
+
+            # Ensure the output directory exists
+            output_dir = "response_usages_16k"
+            os.makedirs(output_dir, exist_ok=True)
+
+            # Save token usage to disk
+            filename = os.path.join(output_dir, f"{uuid.uuid4()}.pkl")
+            with open(filename, "wb") as f:
+                pickle.dump(response.usage, f)
+
+            return [choice.message.content + "\n" for choice in response.choices]
+
         except Exception as e:
-            print("Error in calling OpenAI API", e)
+            print("Error in calling OpenAI API:", e)
             time.sleep(15)
             continue
-    pickle.dump(response.usage, open(f"response_usages_16k/{uuid.uuid4()}.pkl", "wb"))
-
-    return [x.message.content + "\n" for x in response.choices]
